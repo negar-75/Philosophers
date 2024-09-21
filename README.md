@@ -55,7 +55,7 @@ To compile and run the project, ensure you have a C compiler (like `cc`) and the
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd philo
+   cd philosophers/philo
    ```
 
    ```bash
