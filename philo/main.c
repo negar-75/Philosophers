@@ -14,8 +14,7 @@ int main (int   argc, char    **argv)
 	init_program(&data, philos, argv, forks);
 	init_forks(&data);
 	init_philos(philos,forks, &data);
-	monitor_thread_creation(data.philos);
-	philo_thread_creation(philos);
-    destroy_program(NULL,&data,0);
+	thread_creation(philos);
+    //destroy_program(NULL,&data,0);
 	return 0;
 }

@@ -23,7 +23,7 @@ void    init_philos(t_philo *philo, pthread_mutex_t *forks, t_rule *data)
     while (i < data->num_of_philos)
     {
         philo[i].id = i + 1;
-        philo[i].last_meal = 0;
+        philo[i].last_meal = get_current_time();
         philo[i].dead = &data->dead_flag;
         philo[i].meals_eaten = 0;
         philo[i].l_fork = &forks[i];

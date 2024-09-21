@@ -24,6 +24,7 @@ void eat(t_philo *philo)
     philo->last_meal =  get_current_time();
     pthread_mutex_unlock(philo->meal_lock);
     ft_sleep(philo->data->time_to_eat);
+    philo->eating = 0;
     pthread_mutex_unlock(philo->l_fork);
     pthread_mutex_unlock(philo->r_fork);
 
@@ -40,14 +41,15 @@ void    *routine(void *pointer)
 {
     t_philo  *philo;
     
+    
     philo = (t_philo *)pointer;
     if(philo->id % 2 == 0)
         ft_sleep(1);
     while(!search_for_dead(philo))
     {
-        think(philo);
         eat(philo);
         dream(philo);
+        think(philo);
     }
-    return (NULL);
+    return (pointer);
 }
