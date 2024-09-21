@@ -59,8 +59,7 @@ void    *monitor(void* pointer);
 int     search_for_dead (t_philo *philo);
 void    ft_sleep(size_t milisec);
 void    print_msg(char *str, t_philo *philo, int id);
-void 	monitor_thread_creation (t_philo *philo);
-void    philo_thread_creation (t_philo *philo);
+void 	thread_creation (t_philo *philo);
 void    *routine(void *pointer);
 
 #endif
