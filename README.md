@@ -47,7 +47,7 @@ In the context of the dining philosophers problem, a mutex could be used to repr
 ## Semaphore
 
 A semaphore is a synchronization mechanism used in concurrent programming to control access to shared resources. It maintains a count of available resources and allows multiple threads to access them simultaneously, unlike a mutex which permits only one thread at a time.
-
+ 
 
 ## Installation
 To compile and run the project, ensure you have a C compiler (like `cc`) and the necessary development tools installed. Follow these steps:
@@ -71,7 +71,19 @@ To compile and run the project, ensure you have a C compiler (like `cc`) and the
 - **time_to_ea**t: Time in milliseconds a philosopher spends eating.
 - **time_to_sleep**: Time in milliseconds a philosopher spends sleeping.
 - **number_of_meals**: Optional argument to specify the number of times each philosopher must eat.
+## Logic
+```bash
+Time per cycle = Time to eat+Time to sleep=200ms+100ms=300ms
+```
+So in such a test case like 5 800 200 100
+```bash
+Time per cycle = 200 + 100 = 300
+```
+**So 800 >> 300**
 
+each philosopher has enough chance to eat
+
+ ### If Time to Eat+Time to Sleep<Time to Die, no philosopher will die.
  ## Output
  ```bash
 0   1 has taken a left fork
