@@ -10,7 +10,6 @@ HELPER = $(addprefix ./helper/, \
 	ft_putstr_fd.c \
 	ft_strlen.c)
 
-
 UTILS = $(addprefix ./utils/, \
 	check_args.c \
 	err.c \
@@ -23,7 +22,7 @@ UTILS = $(addprefix ./utils/, \
 MAIN = ./main.c
 
 SRCS = $(UTILS) $(HELPER) $(MAIN)
-OBJS = $(SRCS:.c = .o)
+OBJS = $(SRCS:.c=.o)
 
 all : $(NAME)
 

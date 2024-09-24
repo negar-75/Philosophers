@@ -1,21 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   funcs.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nnasiri <nnasiri@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/24 14:02:16 by nnasiri           #+#    #+#             */
+/*   Updated: 2024/09/24 14:07:03 by nnasiri          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../philo.h"
 
-int search_for_dead(t_philo *philo)
+int	search_for_dead(t_philo *philo)
 {
-    int is_dead;
-    pthread_mutex_lock(philo->dead_lock);
-    is_dead = philo->data->dead_flag;
-    pthread_mutex_unlock(philo->dead_lock);
-    return (is_dead);
+	int	is_dead;
+
+	pthread_mutex_lock(philo->dead_lock);
+	is_dead = philo->data->dead_flag;
+	pthread_mutex_unlock(philo->dead_lock);
+	return (is_dead);
 }
 
-void ft_sleep(size_t milisec)
+void	ft_sleep(size_t milisec)
 {
-    size_t start;
-    start = get_current_time();
-    while (get_current_time() - start < milisec)
-        usleep(500);
+	size_t	start;
+
+	start = get_current_time();
+	while (get_current_time() - start < milisec)
+		usleep(500);
 }
 
 size_t	get_current_time(void)
@@ -27,14 +40,13 @@ size_t	get_current_time(void)
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
-void	destroy_program(char *str,t_rule *data, int err)
+void	destroy_program(char *str, t_rule *data, int err)
 {
 	int	i;
 
 	i = 0;
 	if (str)
-        ft_putstr_fd(str,2);
-	
+		ft_putstr_fd(str, 2);
 	pthread_mutex_destroy(&data->write_lock);
 	pthread_mutex_destroy(&data->meal_lock);
 	pthread_mutex_destroy(&data->dead_lock);
@@ -43,7 +55,6 @@ void	destroy_program(char *str,t_rule *data, int err)
 		pthread_mutex_destroy(&data->forks[i]);
 		i++;
 	}
-	
-    if(err)
-        exit(1);
+	if (err)
+		exit(1);
 }

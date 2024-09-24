@@ -1,7 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   err.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nnasiri <nnasiri@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/24 14:02:34 by nnasiri           #+#    #+#             */
+/*   Updated: 2024/09/24 14:02:38 by nnasiri          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../philo.h"
 
-void ft_err(char *str, int exit_code)
+void	ft_err(char *str, int exit_code)
 {
-    ft_putendl_fd(str, 2);
+	ft_putendl_fd(str, 2);
 	exit(exit_code);
 }
