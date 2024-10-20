@@ -11,86 +11,89 @@
 /* ************************************************************************** */
 
 #include "../philo.h"
-
-void	print_msg(char *str, t_philo *philo, int id)
+/*
+data.finished --> write_lock
+*/
+void	print_msg(char *str, t_philo *philo, int force)
 {
 	size_t	time;
 
-	pthread_mutex_lock(philo->write_lock);
+	// Try to lock the write mutex
+	if (pthread_mutex_lock(&philo->data->write_lock) != 0)
+		return;  // Handle lock error if necessary
+
 	time = get_current_time() - philo->data->start_time;
-	if (search_for_dead(philo) == 0)
-		printf("%zu\t %d %s\n", time, id, str);
-	pthread_mutex_unlock(philo->write_lock);
+	
+	// Print the message if not finished or forced to print
+	if (!philo->data->finished || force)
+		printf("%zu\t %d %s\n", time, philo->id, str);
+	
+	// Always unlock the mutex at the end
+	pthread_mutex_unlock(&philo->data->write_lock);
 }
 
-int	is_dead(t_philo *philo)
-{
-	int	is_dead;
-
-	is_dead = 0;
-	pthread_mutex_lock(philo->meal_lock);
-	if (get_current_time() - philo->last_meal >= philo->data->time_to_die)
-		is_dead = 1;
-	pthread_mutex_unlock(philo->meal_lock);
-	return (is_dead);
-}
-
-int	if_all_dead(t_philo *philo)
+/*
+data.finished --> write_lock
+data.last_meal --> meal_lock
+*/
+int	is_dead(t_rule *data)
 {
 	int	i;
-
+	
 	i = 0;
-	while (i < philo->data->num_of_philos)
+	while(i < data->num_of_philos)
 	{
-		if (is_dead(&philo[i]) == 1)
+		pthread_mutex_lock(&data->meal_lock);
+		if(get_current_time() - data->philos[i].last_meal >= data->time_to_die)
 		{
-			print_msg("died", &philo[i], philo[i].id);
-			pthread_mutex_lock(philo->dead_lock);
-			*philo[i].dead = 1;
-			pthread_mutex_unlock(philo->dead_lock);
-			return (1);
+			print_msg("died",&(data->philos[i]),1);
+			pthread_mutex_lock(&data->write_lock);
+			data->finished = 1;
+			pthread_mutex_unlock(&data->meal_lock);
+			return(pthread_mutex_unlock(&data->write_lock), 1);
 		}
+		pthread_mutex_unlock(&data->meal_lock);
 		i++;
 	}
 	return (0);
 }
-
-int	if_all_eat(t_philo *philo)
+/*
+meals_eaten --> full_eaten
+*/
+int	if_all_eat(t_rule *data)
 {
 	int	i;
-	int	eaten;
 
-	if (philo->data->num_times_to_eat == -1)
-		return (0);
-	i = 0;
-	eaten = 0;
-	while (i < philo->data->num_of_philos)
+	i = -1;
+	while (++i < data->num_of_philos)
 	{
-		pthread_mutex_lock(philo[i].meal_lock);
-		if (philo[i].meals_eaten == philo->data->num_times_to_eat)
-			eaten++;
-		pthread_mutex_unlock(philo->meal_lock);
-		i++;
+		pthread_mutex_lock(&data->full_eaten);
+		if (!(data->philos[i].eaten_enough))
+			return (pthread_mutex_unlock(&data->full_eaten), 0);
+		pthread_mutex_unlock(&data->full_eaten);
 	}
-	if (eaten == philo->data->num_of_philos)
-	{
-		pthread_mutex_lock(&philo->data->dead_lock);
-		philo->data->dead_flag = 1;
-		pthread_mutex_unlock(&philo->data->dead_lock);
-		return (1);
-	}
-	return (0);
+	return (1);
 }
 
+/*
+data.finish --> write_lock
+*/
 void	*monitor(void *pointer)
 {
-	t_philo	*philos;
+	t_rule	*data;
 
-	philos = (t_philo *)pointer;
+	data = (t_rule *)pointer;
 	while (1)
 	{
-		if (if_all_dead(philos) == 1 || if_all_eat(philos) == 1)
-			break ;
+		if (is_dead(data) == 1)
+			break;
+		if(data->num_times_to_eat != -1 && if_all_eat(data) == 1)
+		{
+			pthread_mutex_lock(&data->write_lock);
+			data->finished = 1;
+			pthread_mutex_unlock(&data->write_lock);
+			break;
+		}
 	}
 	return (pointer);
 }
